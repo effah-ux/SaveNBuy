@@ -7,8 +7,16 @@ import { cn } from "./ui/utils";
 
 const SLIDE_INTERVAL_MS = 4500;
 const FADE_DURATION_MS = 900;
+const THEME_TRANSITION_MS = 700;
 
-const HERO_SLIDES: Product[] = [
+interface HeroSlide extends Product {
+  gradientFrom: string;
+  gradientTo: string;
+  /** Optional radial highlight (rgba) layered on the linear gradient */
+  gradientAccent?: string;
+}
+
+const HERO_SLIDES: HeroSlide[] = [
   {
     id: 101,
     name: "Luxury Analog Watch - Premium Stainless Steel",
@@ -19,6 +27,9 @@ const HERO_SLIDES: Product[] = [
     image:
       "https://images.unsplash.com/photo-1524805444758-089113d48a6d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=900",
     badge: "Akwaaba",
+    gradientFrom: "#1A1A2E",
+    gradientTo: "#4B134F",
+    gradientAccent: "rgba(120, 40, 90, 0.35)",
   },
   {
     id: 102,
@@ -30,6 +41,9 @@ const HERO_SLIDES: Product[] = [
     image:
       "https://images.unsplash.com/photo-1620783770629-122b7f187703?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=900",
     badge: "Akwaaba",
+    gradientFrom: "#0C1929",
+    gradientTo: "#0369A1",
+    gradientAccent: "rgba(56, 189, 248, 0.28)",
   },
   {
     id: 103,
@@ -41,6 +55,9 @@ const HERO_SLIDES: Product[] = [
     image:
       "https://images.unsplash.com/photo-1596462502278-27bfdc403348?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=900",
     badge: "Akwaaba",
+    gradientFrom: "#701A3C",
+    gradientTo: "#DB2777",
+    gradientAccent: "rgba(251, 191, 36, 0.22)",
   },
   {
     id: 104,
@@ -52,8 +69,17 @@ const HERO_SLIDES: Product[] = [
     image:
       "https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=900",
     badge: "Akwaaba",
+    gradientFrom: "#7C2D12",
+    gradientTo: "#EA580C",
+    gradientAccent: "rgba(251, 146, 60, 0.3)",
   },
 ];
+
+function heroSlideBackground(slide: HeroSlide): string {
+  const linear = `linear-gradient(128deg, ${slide.gradientFrom} 0%, ${slide.gradientTo} 100%)`;
+  if (!slide.gradientAccent) return linear;
+  return `${linear}, radial-gradient(ellipse 100% 85% at 25% 15%, ${slide.gradientAccent}, transparent 58%)`;
+}
 
 const HERO_DISPLAY_NAMES: Record<number, string> = {
   101: "The Watch",
@@ -69,6 +95,32 @@ function formatGhs(amount: number): string {
   })}`;
 }
 
+function DynamicThemeBackground({
+  activeIndex,
+  className,
+}: {
+  activeIndex: number;
+  className?: string;
+}) {
+  return (
+    <div className={cn("absolute inset-0", className)} aria-hidden="true">
+      {HERO_SLIDES.map((slide, index) => (
+        <div
+          key={slide.id}
+          className={cn(
+            "absolute inset-0 transition-opacity ease-in-out",
+            index === activeIndex ? "opacity-100" : "opacity-0",
+          )}
+          style={{
+            background: heroSlideBackground(slide),
+            transitionDuration: `${THEME_TRANSITION_MS}ms`,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
 function StarRating() {
   return (
     <div className="flex items-center gap-2 flex-wrap">
@@ -76,12 +128,12 @@ function StarRating() {
         {Array.from({ length: 5 }).map((_, i) => (
           <Star
             key={i}
-            className="size-3.5 sm:size-4 fill-emerald-400 text-emerald-400"
+            className="size-3.5 sm:size-4 fill-emerald-400 text-emerald-400 drop-shadow-sm"
             strokeWidth={0}
           />
         ))}
       </span>
-      <span className="text-xs sm:text-sm text-white/95 font-medium tracking-wide font-sans">
+      <span className="text-xs sm:text-sm font-medium tracking-wide text-white font-sans [text-shadow:0_1px_8px_rgba(0,0,0,0.45)]">
         4.6/5 | 225,000+ Happy Customers in Ghana
       </span>
     </div>
@@ -120,7 +172,6 @@ function HeroProductSlider({
       className={cn(
         "relative flex w-full flex-col overflow-hidden rounded-2xl sm:rounded-3xl",
         "min-h-[360px] sm:min-h-[420px] lg:min-h-[480px]",
-        "bg-[radial-gradient(ellipse_80%_60%_at_20%_0%,rgba(255,140,0,0.45),transparent_55%),radial-gradient(ellipse_70%_55%_at_90%_100%,rgba(236,72,153,0.5),transparent_50%),linear-gradient(145deg,#2a1408_0%,#1a0a12_45%,#2d1020_100%)]",
         "shadow-[0_24px_60px_-12px_rgba(0,0,0,0.45)]",
         "ring-1 ring-white/10",
       )}
@@ -136,7 +187,9 @@ function HeroProductSlider({
       aria-live="polite"
       aria-atomic="true"
     >
+      <DynamicThemeBackground activeIndex={activeIndex} />
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(160deg,rgba(255,255,255,0.06)_0%,transparent_40%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-black/20" />
 
       <div className="relative flex min-h-[inherit] flex-1 flex-col">
         <div className="relative flex-1 w-full min-h-[240px] sm:min-h-[280px] lg:min-h-[320px]">
@@ -168,11 +221,11 @@ function HeroProductSlider({
           className="relative z-20 shrink-0 px-5 pb-3 pt-4 text-center sm:px-8"
           style={{ transitionDuration: `${FADE_DURATION_MS}ms` }}
         >
-          <p className="text-base font-semibold tracking-tight text-white sm:text-lg font-sans">
+          <p className="text-base font-semibold tracking-tight text-white sm:text-lg font-sans [text-shadow:0_1px_6px_rgba(0,0,0,0.5)]">
             {displayName}
           </p>
-          <p className="mt-1 text-xl font-bold tracking-tight text-white tabular-nums sm:text-2xl">
-            <span className="text-orange-300">{formatGhs(activeSlide.price)}</span>
+          <p className="mt-1 text-xl font-bold tracking-tight text-white tabular-nums sm:text-2xl [text-shadow:0_1px_6px_rgba(0,0,0,0.5)]">
+            <span className="text-amber-200">{formatGhs(activeSlide.price)}</span>
           </p>
         </div>
 
@@ -219,32 +272,27 @@ export function HeroSection({ onAddToCart }: HeroSectionProps) {
   };
 
   return (
-    <section
-      className={cn(
-        "relative overflow-hidden",
-        "bg-[radial-gradient(ellipse_120%_90%_at_0%_30%,#c2410c_0%,transparent_52%),radial-gradient(ellipse_100%_80%_at_100%_0%,#be185d_0%,transparent_48%),radial-gradient(ellipse_90%_70%_at_60%_100%,#7f1d1d_0%,transparent_55%),linear-gradient(128deg,#9a3412_0%,#9d174d_38%,#701a3c_68%,#3b0f1f_100%)]",
-      )}
-    >
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_30%_20%,rgba(255,200,120,0.18),transparent_50%)]" />
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_80%_80%,rgba(244,114,182,0.12),transparent_45%)]" />
-      <div className="pointer-events-none absolute inset-0 bg-black/10" />
+    <section className="relative overflow-hidden transition-colors duration-700 ease-in-out">
+      <DynamicThemeBackground activeIndex={activeIndex} />
+      <div className="pointer-events-none absolute inset-0 bg-black/25" />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(105deg,rgba(0,0,0,0.35)_0%,transparent_42%,rgba(0,0,0,0.12)_100%)]" />
 
-      <div className="container relative mx-auto px-4 py-10 sm:py-12 lg:py-14">
+      <div className="container relative z-10 mx-auto px-4 py-10 sm:py-12 lg:py-14">
         <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-14 xl:gap-16">
-          <div className="mx-auto flex w-full max-w-xl flex-col items-start text-left text-white lg:mx-0">
+          <div className="mx-auto flex w-full max-w-xl flex-col items-start rounded-2xl text-left text-white lg:mx-0 lg:bg-black/20 lg:p-6 lg:backdrop-blur-[2px]">
             <StarRating />
 
             <h1
               className={cn(
                 "mt-5 font-serif text-4xl font-semibold tracking-tight text-white sm:mt-6 sm:text-5xl lg:text-[3.25rem] xl:text-6xl",
-                "leading-[1.1]",
+                "leading-[1.1] [text-shadow:0_2px_12px_rgba(0,0,0,0.55)]",
               )}
             >
               <span className="block">Akwaaba Sale</span>
               <span className="mt-1 block">Up to 60% Off</span>
             </h1>
 
-            <p className="mt-4 max-w-md font-sans text-sm leading-relaxed text-white/90 sm:mt-5 sm:text-base">
+            <p className="mt-4 max-w-md font-sans text-sm leading-relaxed text-white sm:mt-5 sm:text-base [text-shadow:0_1px_8px_rgba(0,0,0,0.45)]">
               Best Deals in Accra. No.1 rated online marketplace for quality
               products delivered fast in Ghana.
             </p>
@@ -256,13 +304,13 @@ export function HeroSection({ onAddToCart }: HeroSectionProps) {
                 "mt-7 h-12 rounded-lg px-10 sm:mt-8",
                 "bg-white text-gray-900 hover:bg-white/95",
                 "font-sans text-sm font-bold tracking-[0.12em] sm:text-base",
-                "shadow-lg shadow-black/20",
+                "shadow-lg shadow-black/30 ring-1 ring-white/20",
               )}
             >
               BUY NOW
             </Button>
 
-            <p className="mt-3 font-sans text-xs text-white/80 sm:text-sm">
+            <p className="mt-3 font-sans text-xs text-white/95 sm:text-sm [text-shadow:0_1px_6px_rgba(0,0,0,0.4)]">
               Free delivery on orders over {formatGhs(150)}
             </p>
           </div>

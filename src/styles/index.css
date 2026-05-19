@@ -1,3 +1,28 @@
 @import './fonts.css';
 @import './tailwind.css';
 @import './theme.css';
+
+/* Keep mobile phone views at 100% normal zoom, but compact tablets and desktops */
+@media (min-width: 768px) {
+  html,
+  body {
+    zoom: 0.85;
+  }
+
+  /* Firefox and other engines without `zoom` — match 85% via #root scale */
+  @supports not (zoom: 1) {
+    html,
+    body {
+      zoom: unset;
+      overflow-x: hidden;
+    }
+
+    #root {
+      transform: scale(0.85);
+      transform-origin: top center;
+      width: calc(100% / 0.85);
+      min-height: calc(100vh / 0.85);
+      margin-inline: auto;
+    }
+  }
+}

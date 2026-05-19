@@ -3,6 +3,7 @@ import { Header } from "./components/Header";
 import { HeroSection } from "./components/HeroSection";
 import { CategorySection } from "./components/CategorySection";
 import { FlashDeals } from "./components/FlashDeals";
+import { ShowcaseSection } from "./components/ShowcaseSection";
 import { BrandCarousel } from "./components/BrandCarousel";
 import { ProductGrid, Product } from "./components/ProductGrid";
 import { ShoppingCartModal, CartItem } from "./components/ShoppingCartModal";
@@ -506,41 +507,36 @@ export default function App() {
         <BrandCarousel />
 
         {/* Falaaa Deals Section */}
-        <section className="py-12 bg-gradient-to-br from-purple-50 to-pink-50">
-          <div className="container mx-auto px-4">
-            <div className="mb-8">
-              <h2 className="text-2xl md:text-3xl font-bold mb-2">
-                Falaaa Deals 😮 <span className="text-purple-600">| Save Up to 50%</span>
-              </h2>
-              <p className="text-gray-600">Unbelievable prices on amazing products</p>
-            </div>
-            <ProductGrid products={falaaaDealsProducts} onAddToCart={handleAddToCart} />
+        <ShowcaseSection>
+          <div className="mb-8">
+            <h2 className="text-2xl md:text-3xl font-bold mb-2">
+              Falaaa Deals 😮 <span className="text-orange-600">| Save Up to 50%</span>
+            </h2>
+            <p className="text-gray-600">Unbelievable prices on amazing products</p>
           </div>
-        </section>
+          <ProductGrid products={falaaaDealsProducts} onAddToCart={handleAddToCart} />
+        </ShowcaseSection>
 
         {/* Recommended Products */}
-        <section className="py-12 bg-white">
-          <div className="container mx-auto px-4">
-            <div className="mb-8">
-              <h2 className="text-2xl md:text-3xl font-bold mb-2">Recommended for You</h2>
-              <p className="text-gray-600">Handpicked products just for you</p>
-            </div>
-            <ProductGrid products={recommendedProducts} onAddToCart={handleAddToCart} />
+        <ShowcaseSection>
+          <div className="mb-8">
+            <h2 className="text-2xl md:text-3xl font-bold mb-2">Recommended for You</h2>
+            <p className="text-gray-600">Handpicked products just for you</p>
           </div>
-        </section>
+          <ProductGrid products={recommendedProducts} onAddToCart={handleAddToCart} />
+        </ShowcaseSection>
 
         {/* Deals Section */}
-        <section className="py-12 bg-gradient-to-br from-blue-50 to-cyan-50">
-          <div className="container mx-auto px-4">
-            <div className="mb-8">
-              <h2 className="text-2xl md:text-3xl font-bold mb-2">
-                Deals You Don't Want to Miss <span className="text-orange-500">| Up to 60% off</span>
-              </h2>
-              <p className="text-gray-600">Limited time offers on top products</p>
-            </div>
-            <ProductGrid products={dealsProducts} onAddToCart={handleAddToCart} />
+        <ShowcaseSection>
+          <div className="mb-8">
+            <h2 className="text-2xl md:text-3xl font-bold mb-2">
+              Deals You Don&apos;t Want to Miss{" "}
+              <span className="text-orange-600">| Up to 60% off</span>
+            </h2>
+            <p className="text-gray-600">Limited time offers on top products</p>
           </div>
-        </section>
+          <ProductGrid products={dealsProducts} onAddToCart={handleAddToCart} />
+        </ShowcaseSection>
       </main>
 
       <Footer />
